@@ -1,0 +1,376 @@
+/* ==========================================================================
+   生态系统呼吸预测 — 页面样式
+   白底黑字，无渐变、无阴影、无动画。
+   ========================================================================== */
+
+:root {
+  color-scheme: light;
+
+  --ink: #111111;
+  --ink-soft: #333333;
+  --muted: #5f5f5f;
+  --muted-light: #767676;
+  --line: #cfcfcf;
+  --line-soft: #e6e6e6;
+  --bg: #ffffff;
+  --error: #b42318;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial,
+    "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: #111111;
+  color: #ffffff;
+}
+
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.page {
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 72px 24px 56px;
+}
+
+/* --------------------------------------------------------------------------
+   标题
+   -------------------------------------------------------------------------- */
+
+.header {
+  margin-bottom: 32px;
+  padding-bottom: 26px;
+  border-bottom: 1px solid var(--line-soft);
+}
+
+h1 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+}
+
+.intro {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+/* --------------------------------------------------------------------------
+   表单
+   -------------------------------------------------------------------------- */
+
+.fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.field label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--ink-soft);
+  font-size: 13px;
+}
+
+.field input {
+  width: 100%;
+  height: 42px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--bg);
+  color: var(--ink);
+  font: inherit;
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+
+.field input:hover {
+  border-color: #bdbdbd;
+}
+
+.field input:focus {
+  border-color: var(--ink);
+  outline: none;
+}
+
+.field input::placeholder {
+  color: #a6a6a6;
+}
+
+.field input.is-invalid {
+  border-color: var(--error);
+}
+
+.field input[readonly] {
+  color: var(--muted);
+}
+
+.hint {
+  margin: 12px 0 0;
+  color: var(--muted-light);
+  font-size: 12.5px;
+  line-height: 1.7;
+}
+
+.hint.is-error {
+  color: var(--error);
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 132px;
+  height: 42px;
+  margin-top: 20px;
+  padding: 0 20px;
+  border: 1px solid var(--ink);
+  border-radius: 2px;
+  background: var(--ink);
+  color: #ffffff;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.button:hover:not(:disabled) {
+  background: #000000;
+}
+
+.button:disabled {
+  border-color: #a3a3a3;
+  background: #a3a3a3;
+  cursor: default;
+}
+
+/* --------------------------------------------------------------------------
+   结果
+   -------------------------------------------------------------------------- */
+
+.result {
+  min-height: 152px;
+  margin-top: 36px;
+  padding: 20px 22px 22px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+}
+
+.result-title {
+  margin: 0 0 14px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+}
+
+.placeholder {
+  margin: 0;
+  color: var(--muted-light);
+  font-size: 14px;
+}
+
+.value {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0 0 22px;
+  font-variant-numeric: tabular-nums;
+}
+
+.value-symbol {
+  color: var(--muted);
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.value-number {
+  font-size: 44px;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+.meta {
+  margin: 0;
+  border-top: 1px solid var(--line-soft);
+}
+
+.meta > div {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line-soft);
+  font-size: 13.5px;
+}
+
+.meta > div:last-child {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.meta dt {
+  color: var(--muted);
+}
+
+.meta dd {
+  margin: 0;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.actions {
+  margin-top: 18px;
+}
+
+.text-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 12.5px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.text-button:hover {
+  color: var(--ink);
+}
+
+.loading-text,
+.error-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.error-title {
+  color: var(--error);
+}
+
+.elapsed {
+  margin: 8px 0 0;
+  color: var(--muted-light);
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.error-text {
+  margin: 8px 0 0;
+  font-size: 13.5px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+details {
+  margin-top: 14px;
+}
+
+summary {
+  color: var(--muted);
+  font-size: 12.5px;
+  cursor: pointer;
+}
+
+summary:hover {
+  color: var(--ink);
+}
+
+pre {
+  max-height: 180px;
+  margin: 8px 0 0;
+  padding: 12px;
+  overflow: auto;
+  border: 1px solid var(--line-soft);
+  background: #fafafa;
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* --------------------------------------------------------------------------
+   页脚
+   -------------------------------------------------------------------------- */
+
+.footer {
+  margin-top: 56px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line-soft);
+  color: var(--muted-light);
+  font-size: 12px;
+  line-height: 1.9;
+}
+
+.footer p {
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   移动端
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 560px) {
+  .page {
+    padding: 40px 20px 40px;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  .header {
+    margin-bottom: 28px;
+    padding-bottom: 22px;
+  }
+
+  .fields {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .result {
+    padding: 18px;
+  }
+
+  .value-number {
+    font-size: 38px;
+  }
+}

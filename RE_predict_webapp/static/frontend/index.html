@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#ffffff">
+  <title>生态系统呼吸预测</title>
+  <meta name="description" content="输入经纬度，匹配最近的通量观测站并预测生态系统呼吸 Re。">
+  <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+  <main class="page">
+    <header class="header">
+      <!-- 文案：页面标题 -->
+      <h1>生态系统呼吸预测</h1>
+      <!-- 文案：页面说明 -->
+      <p class="intro">输入经纬度，预测生态系统呼吸 Re。</p>
+    </header>
+
+    <form class="form" id="predict-form" novalidate>
+      <div class="fields">
+        <div class="field">
+          <!-- 文案：纬度字段名 -->
+          <label for="lat">纬度</label>
+          <input id="lat" name="lat" type="text" inputmode="decimal" autocomplete="off"
+                 spellcheck="false" maxlength="16" placeholder="39.90"
+                 aria-describedby="form-message">
+        </div>
+        <div class="field">
+          <!-- 文案：经度字段名 -->
+          <label for="lon">经度</label>
+          <input id="lon" name="lon" type="text" inputmode="decimal" autocomplete="off"
+                 spellcheck="false" maxlength="17" placeholder="116.40"
+                 aria-describedby="form-message">
+        </div>
+      </div>
+
+      <!-- 文案：默认提示（校验失败时会被替换） -->
+      <p class="hint" id="form-message">北纬、东经为正；纬度 −90 ~ 90，经度 −180 ~ 180。</p>
+
+      <!-- 文案：提交按钮 -->
+      <button class="button" id="submit-btn" type="submit">
+        <span id="submit-label">开始预测</span>
+      </button>
+    </form>
+
+    <section class="result" aria-live="polite">
+      <!-- 文案：结果区标题 -->
+      <h2 class="result-title">预测结果</h2>
+      <div id="result-body">
+        <p class="placeholder">尚未预测</p>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <!-- 文案：页脚说明 -->
+      <p>预测气象数据来自 Open-Meteo</p>
+      <p>感谢Chinaflux各个站点提供的数据支持</p>
+    </footer>
+  </main>
+
+  <script src="./js/app.js" defer></script>
+</body>
+</html>
