@@ -1,12 +1,12 @@
 /* ==========================================================================
    生态系统呼吸预测 — 页面逻辑
-   对接现有 Django 接口 GET /?lat=…&lon=…（返回纯文本），不修改后端代码。
+   对接后端 JSON 接口 GET /api/predict/?lat=…&lon=…，展示预测值与置信度。
    ========================================================================== */
 
 (() => {
   'use strict';
 
-  const ENDPOINT = new URL('/', window.location.href);
+  const ENDPOINT = new URL('/api/predict/', window.location.href);
   const TIMEOUT_MS = 150000;
 
   /* ------------------------------------------------------------------------
@@ -23,9 +23,13 @@
     cancelledHint: '修改坐标后可以重新预测。',
     valueSymbol: 'Re =',
     copyValueLabel: '预测值',
+    confidence: '置信度',
+    match: '匹配方式',
     station: '站点',
     distance: '距离',
     coords: '坐标',
+    weatherSource: '气象来源',
+    zoneSource: '分区依据',
     copy: '复制结果',
     copied: '已复制',
     copyFailed: '复制失败',
@@ -35,13 +39,19 @@
       required: (name) => `请输入${name}。`,
       numeric: (name) => `${name}必须为数字，例如 39.90。`,
       range: (name, min, max) => `${name}需在 ${min} ~ ${max} 之间。`,
-      http: (status) => `服务器返回错误（HTTP ${status}），请检查后端终端日志。`,
       timeout: (seconds) => `请求超过 ${seconds} 秒未返回，已取消。`,
-      network: '无法连接后端服务，请确认 Django 开发服务器正在运行。',
-      unknown: '未能从服务器返回中解析出预测值。',
-      modelLoad: '模型加载失败，请检查后端终端。',
-      invalidValue: (value) => `模型返回了无效数值（${value}）。`,
-      predict: (detail) => `模型预测报错：${detail}`,
+      network: '无法连接后端服务，请确认服务正在运行。',
+      badResponse: '服务器返回的内容无法解析，请稍后重试。',
+      unknown: '预测失败，请稍后重试。',
+      // 接口错误码 -> 兜底文案（正常情况下直接显示服务端返回的 message）
+      codes: {
+        INVALID_INPUT: '经纬度格式不正确。',
+        OUT_OF_CHINA: '输入的经纬度不在中国陆地范围内，无法预测。',
+        WEATHER_UNAVAILABLE: '未能获取气象数据，请稍后再试。',
+        MODEL_UNAVAILABLE: '该站点的模型不可用，请稍后再试。',
+        DATA_UNAVAILABLE: '服务端数据加载失败，请稍后再试。',
+        INTERNAL_ERROR: '服务器内部错误，请稍后再试。',
+      },
     },
   };
 
@@ -63,6 +73,7 @@
     startedAt: 0,
     payload: null,
     copyTimer: null,
+    renderToken: 0,
   };
 
   /* 默认提示与按钮文字以 index.html 为准，这里只负责恢复 */
@@ -110,14 +121,24 @@
   }
 
   function formatDistance(value) {
-    return Number.isFinite(value) ? `${value.toFixed(2)}°` : '—';
+    return Number.isFinite(value) ? `${value.toFixed(2)} km` : '—';
   }
 
-  function stationLabel(data) {
-    const name = data.siteName ? String(data.siteName).trim() : '';
-    const code = data.stationCode ? String(data.stationCode).trim() : '';
+  function formatText(value, fallback = '—') {
+    const text = value == null ? '' : String(value).trim();
+    return text || fallback;
+  }
+
+  function stationLabel(station) {
+    const name = formatText(station && station.name, '');
+    const code = formatText(station && station.code, '');
     if (name && code) return `${name}（${code}）`;
     return name || code || '—';
+  }
+
+  function confidenceClass(confidence) {
+    const code = formatText(confidence && confidence.code, 'low');
+    return ['high', 'medium', 'low'].includes(code) ? code : 'low';
   }
 
   function truncate(text, limit = 2400) {
@@ -158,6 +179,7 @@
      --------------------------------------------------------------------- */
 
   function renderLoading() {
+    nextRenderToken();
     dom.body.innerHTML = `
       <p class="loading-text">${escapeHtml(TEXT.loading)}</p>
       <p class="elapsed">
@@ -168,28 +190,94 @@
   }
 
   function renderSuccess(data) {
-    const station = escapeHtml(stationLabel(data));
-    const distance = escapeHtml(formatDistance(data.distance));
-    const coords = escapeHtml(`${formatCoord(data.lat)}, ${formatCoord(data.lon)}`);
+    const token = nextRenderToken();
+    const result = data.result || {};
+    const station = result.station || {};
+    const matching = result.matching || {};
+    const confidence = result.confidence || {};
+    const weather = result.weather || {};
 
     dom.body.innerHTML = `
       <p class="value">
         <span class="value-symbol">${escapeHtml(TEXT.valueSymbol)}</span>
-        <span class="value-number">${formatNumber(data.prediction)}</span>
+        <span class="value-number">${formatNumber(result.prediction)}</span>
+      </p>
+      <p class="confidence">
+        <span class="confidence-label">${escapeHtml(TEXT.confidence)}</span>
+        <span class="badge is-${confidenceClass(confidence)}">${escapeHtml(formatText(confidence.label))}</span>
+        <span class="confidence-note">${escapeHtml(formatText(confidence.note, ''))}</span>
       </p>
       <dl class="meta">
-        <div><dt>${escapeHtml(TEXT.station)}</dt><dd>${station}</dd></div>
-        <div><dt>${escapeHtml(TEXT.distance)}</dt><dd>${distance}</dd></div>
-        <div><dt>${escapeHtml(TEXT.coords)}</dt><dd>${coords}</dd></div>
+        <div><dt>${escapeHtml(TEXT.match)}</dt><dd>${escapeHtml(formatText(matching.label))}</dd></div>
+        <div><dt>${escapeHtml(TEXT.station)}</dt><dd>${escapeHtml(stationLabel(station))}</dd></div>
+        <div><dt>${escapeHtml(TEXT.distance)}</dt><dd>${escapeHtml(formatDistance(matching.distance_km))}</dd></div>
+        <div><dt>${escapeHtml(TEXT.coords)}</dt><dd>${escapeHtml(`${formatCoord(data.request && data.request.lat)}, ${formatCoord(data.request && data.request.lon)}`)}</dd></div>
+        <div><dt>${escapeHtml(TEXT.weatherSource)}</dt><dd data-source-weather>${escapeHtml(formatText(weather.source))}</dd></div>
+        <div><dt>${escapeHtml(TEXT.zoneSource)}</dt><dd data-source-zones>${escapeHtml(describeZones(matching, null))}</dd></div>
       </dl>
       <div class="actions">
         <button type="button" class="text-button" data-copy>${escapeHtml(TEXT.copy)}</button>
       </div>`;
 
     state.payload = data;
+    annotateSources(token);
+  }
+
+  /* ------------------------------------------------------------------------
+     结果区的数据来源标注
+     与数据来源页共用 GET /api/sources/ 的同一份文案，避免两处不一致。
+     --------------------------------------------------------------------- */
+
+  function nextRenderToken() {
+    state.renderToken += 1;
+    return state.renderToken;
+  }
+
+  async function annotateSources(token) {
+    const common = window.RECommon;
+    if (!common) return;
+
+    let sources = null;
+    try {
+      sources = await common.loadSources();
+    } catch (error) {
+      sources = null;  // 标注失败不影响预测结果本身
+    }
+    if (token !== state.renderToken || !state.payload) return;
+
+    const result = state.payload.result || {};
+    const matching = result.matching || {};
+
+    const weatherNode = dom.body.querySelector('[data-source-weather]');
+    if (weatherNode && sources && sources.weather) {
+      weatherNode.textContent = formatText(sources.weather.label, weatherNode.textContent);
+    }
+
+    const zonesNode = dom.body.querySelector('[data-source-zones]');
+    if (zonesNode) zonesNode.textContent = describeZones(matching, sources);
+  }
+
+  function describeZones(matching, sources) {
+    const parts = [];
+    if (matching.same_soil) {
+      parts.push(`同类土壤（土壤分区：${formatText(matching.input_soil_type, '未知')}）`);
+    }
+    if (matching.same_climate) {
+      parts.push(`同类气候（气候分区：${formatText(matching.input_climate_type, '未知')}）`);
+    }
+    if (!parts.length) return '未命中分区，按空间最近站点匹配';
+
+    const shorts = (sources && sources.shorts) || {};
+    const layers = [];
+    if (matching.same_soil && shorts.soil) layers.push(shorts.soil);
+    if (matching.same_climate && shorts.climate) layers.push(shorts.climate);
+
+    const text = parts.join('、');
+    return layers.length ? `${text}；图层：${layers.join('、')}` : text;
   }
 
   function renderError(message, raw) {
+    nextRenderToken();
     const detail = raw && String(raw).trim() ? String(raw).trim() : '';
 
     dom.body.innerHTML = `
@@ -204,6 +292,7 @@
   }
 
   function renderCancelled() {
+    nextRenderToken();
     dom.body.innerHTML = `
       <p class="loading-text">${escapeHtml(TEXT.cancelled)}</p>
       <p class="elapsed">${escapeHtml(TEXT.cancelledHint)}</p>`;
@@ -253,78 +342,22 @@
   }
 
   /* ------------------------------------------------------------------------
-     解析后端纯文本
+     解析后端返回
      --------------------------------------------------------------------- */
 
-  function parseResponse(text) {
-    const raw = String(text == null ? '' : text).replace(/\r\n/g, '\n').trim();
-    const result = {
-      raw,
-      prediction: null,
-      stationCode: null,
-      siteName: null,
-      distance: null,
-      lat: null,
-      lon: null,
-      invalid: null,
-      error: null,
-    };
-
-    const lines = raw.split('\n').map((line) => line.trim()).filter(Boolean);
-
-    for (const line of lines) {
-      let match = line.match(/^您的位置\s*[:：]\s*\(?\s*([-+]?\d+(?:\.\d+)?)\s*[,，]\s*([-+]?\d+(?:\.\d+)?)\s*\)?/);
-      if (match) {
-        result.lat = Number(match[1]);
-        result.lon = Number(match[2]);
-        continue;
-      }
-
-      match = line.match(/^匹配到最近的站点\s*[:：]\s*([A-Za-z0-9_-]+)\s*(?:\((.*)\))?\s*$/);
-      if (match) {
-        result.stationCode = match[1];
-        result.siteName = match[2] ? match[2].trim() : null;
-        continue;
-      }
-
-      match = line.match(/^距离\s*[:：]\s*([-+]?\d+(?:\.\d+)?)/);
-      if (match) {
-        result.distance = Number(match[1]);
-        continue;
-      }
-
-      match = line.match(/^预测值\s*[:：]\s*([^\n]+)$/);
-      if (match) {
-        const valueText = match[1].trim();
-        if (/^[+-]?(?:nan|inf(?:inity)?)$/i.test(valueText)) {
-          result.invalid = valueText;
-        } else {
-          const value = Number(valueText);
-          if (Number.isFinite(value)) result.prediction = value;
-        }
-        continue;
-      }
+  function parsePayload(text) {
+    try {
+      return JSON.parse(text);
+    } catch (error) {
+      return null;
     }
+  }
 
-    if (result.prediction === null) {
-      const predictError = raw.match(/模型预测报错\s*[:：]\s*([\s\S]+)/);
-
-      if (predictError) {
-        result.error = TEXT.errors.predict(predictError[1].trim());
-      } else if (raw.includes('模型加载失败')) {
-        result.error = TEXT.errors.modelLoad;
-      } else if (raw.includes('请在网址带上经纬度')) {
-        result.error = TEXT.errors.required('经纬度');
-      } else if (raw.includes('经纬度必须是数字')) {
-        result.error = TEXT.errors.numeric('经纬度');
-      } else if (result.invalid) {
-        result.error = TEXT.errors.invalidValue(result.invalid);
-      } else {
-        result.error = TEXT.errors.unknown;
-      }
-    }
-
-    return result;
+  function errorMessage(payload) {
+    const error = (payload && payload.error) || {};
+    const code = formatText(error.code, '');
+    const message = formatText(error.message, '');
+    return message || TEXT.errors.codes[code] || TEXT.errors.unknown;
   }
 
   /* ------------------------------------------------------------------------
@@ -374,24 +407,23 @@
       const response = await fetch(url.toString(), {
         method: 'GET',
         cache: 'no-store',
-        headers: { Accept: 'text/plain, text/html, */*' },
+        headers: { Accept: 'application/json' },
         signal: controller.signal,
       });
 
       const text = await response.text();
+      const payload = parsePayload(text);
 
-      if (!response.ok) {
-        renderError(TEXT.errors.http(response.status), text);
+      if (!payload) {
+        renderError(TEXT.errors.badResponse, text);
+        return;
+      }
+      if (!response.ok || payload.ok !== true) {
+        renderError(errorMessage(payload), '');
         return;
       }
 
-      const parsed = parseResponse(text);
-      if (parsed.error) {
-        renderError(parsed.error, parsed.raw);
-        return;
-      }
-
-      renderSuccess(parsed);
+      renderSuccess(payload);
     } catch (error) {
       if (error && error.name === 'AbortError') {
         if (state.abortReason === 'cancel') renderCancelled();
@@ -419,12 +451,17 @@
      --------------------------------------------------------------------- */
 
   function buildCopyText(data) {
+    const result = data.result || {};
+    const matching = result.matching || {};
+    const confidence = result.confidence || {};
     return [
       document.title,
-      `${TEXT.copyValueLabel}：${formatNumber(data.prediction)}`,
-      `${TEXT.station}：${stationLabel(data)}`,
-      `${TEXT.distance}：${formatDistance(data.distance)}`,
-      `${TEXT.coords}：${formatCoord(data.lat)}, ${formatCoord(data.lon)}`,
+      `${TEXT.copyValueLabel}：${formatNumber(result.prediction)}`,
+      `${TEXT.confidence}：${formatText(confidence.label)}`,
+      `${TEXT.match}：${formatText(matching.label)}`,
+      `${TEXT.station}：${stationLabel(result.station)}`,
+      `${TEXT.distance}：${formatDistance(matching.distance_km)}`,
+      `${TEXT.coords}：${formatCoord(data.request && data.request.lat)}, ${formatCoord(data.request && data.request.lon)}`,
     ].join('\n');
   }
 

@@ -1,24 +1,7 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="light">
-  <meta name="theme-color" content="#ffffff">
-  <title>生态系统呼吸预测</title>
-  <meta name="description" content="输入经纬度，匹配最近的通量观测站并预测生态系统呼吸 Re。">
-  <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
-  <link rel="stylesheet" href="./css/style.css">
-</head>
-<body>
-  <main class="page">
-    <header class="header">
-      <!-- 文案：页面标题 -->
-      <h1>生态系统呼吸预测</h1>
-      <!-- 文案：页面说明 -->
-      <p class="intro">输入经纬度，预测生态系统呼吸 Re。</p>
-    </header>
+{% extends "RE_predict_webapp/base.html" %}
+{% load static %}
 
+{% block content %}
     <form class="form" id="predict-form" novalidate>
       <div class="fields">
         <div class="field">
@@ -53,14 +36,9 @@
         <p class="placeholder">尚未预测</p>
       </div>
     </section>
+{% endblock %}
 
-    <footer class="footer">
-      <!-- 文案：页脚说明 -->
-      <p>预测气象数据来自 Open-Meteo</p>
-      <p>感谢Chinaflux各个站点提供的数据支持</p>
-    </footer>
-  </main>
-
-  <script src="./js/app.js" defer></script>
-</body>
-</html>
+{% block scripts %}
+  <script src="{% static 'frontend/js/common.js' %}" defer></script>
+  <script src="{% static 'frontend/js/app.js' %}" defer></script>
+{% endblock %}

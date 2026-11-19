@@ -1,0 +1,12 @@
+Django==6.1.3
+geopandas==1.2.0
+joblib==1.6.0
+numpy==2.4.4
+openmeteo_requests==1.7.5
+pandas==3.0.2
+pyogrio==0.13.0
+pyproj==3.8.0
+scikit-learn==1.9.1
+shapely==2.2.0
+whitenoise>=6.6
+gunicorn>=21

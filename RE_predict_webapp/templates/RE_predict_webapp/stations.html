@@ -1,0 +1,55 @@
+{% extends "RE_predict_webapp/base.html" %}
+{% load static %}
+
+{% block content %}
+    <section class="toolbar" aria-label="站点筛选">
+      <div class="field">
+        <!-- 文案：检索框 -->
+        <label for="station-search">检索</label>
+        <input id="station-search" type="search" autocomplete="off" spellcheck="false"
+               placeholder="编码、名称或分区">
+      </div>
+      <div class="field">
+        <label for="filter-ecosystem">生态系统</label>
+        <select id="filter-ecosystem">
+          <option value="">全部</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="filter-climate">气候分区</label>
+        <select id="filter-climate">
+          <option value="">全部</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="filter-soil">土壤类型</label>
+        <select id="filter-soil">
+          <option value="">全部</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="filter-model">模型状态</label>
+        <select id="filter-model">
+          <option value="">全部</option>
+          <option value="ok">可用</option>
+          <option value="missing">不可用</option>
+        </select>
+      </div>
+    </section>
+
+    <div class="list-head">
+      <p class="hint" id="stations-status" role="status">正在加载站点…</p>
+      <button type="button" class="text-button" id="filter-reset">重置筛选</button>
+    </div>
+
+    <div class="station-list" id="station-list"></div>
+
+    <noscript>
+      <p class="hint">站点与模型信息来自只读接口 <code>/api/stations/</code>，需要启用 JavaScript 才能查看。</p>
+    </noscript>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{% static 'frontend/js/common.js' %}" defer></script>
+  <script src="{% static 'frontend/js/stations.js' %}" defer></script>
+{% endblock %}

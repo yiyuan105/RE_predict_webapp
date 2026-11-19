@@ -33,7 +33,7 @@ def _open_page_when_ready(host, port):
     for _ in range(240):
         try:
             with socket.create_connection((host, port), timeout=1):
-                webbrowser.open(f'http://{url_host}:{port}/static/frontend/index.html')
+                webbrowser.open(f'http://{url_host}:{port}/')
                 return
         except OSError:
             time.sleep(0.5)

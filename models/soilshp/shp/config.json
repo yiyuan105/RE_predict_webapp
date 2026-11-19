@@ -1,0 +1,116 @@
+{
+  "stations": {
+    "BNF": {
+      "site_name": "西双版纳热带雨林",
+      "ecosystem": "Forest",
+      "veg_type": "tropical rainforest",
+      "lat": 21.9167,
+      "lon": 101.2667,
+      "soil_type": "砖红壤"
+    },
+    "CBF": {
+      "site_name": "长白山站",
+      "ecosystem": "Forest",
+      "veg_type": "temperate mixed broadleaf-conifer forest",
+      "lat": 42.4,
+      "lon": 128.4667,
+      "soil_type": "暗棕壤"
+    },
+    "DHF": {
+      "site_name": "鼎湖山站南亚热带森林生态系统",
+      "ecosystem": "Forest",
+      "veg_type": "south subtropical evergreen broadleaf forest",
+      "lat": 23.1663,
+      "lon": 112.5487,
+      "soil_type": "南方水稻土"
+    },
+    "DM": {
+      "site_name": "大满农田",
+      "ecosystem": "Cropland",
+      "veg_type": "maize cropland (oasis irrigated)",
+      "lat": 38.8555,
+      "lon": 100.3722,
+      "soil_type": "灰色草甸土"
+    },
+    "DXG": {
+      "site_name": "当雄站高寒草甸生态系统",
+      "ecosystem": "Grassland",
+      "veg_type": "alpine meadow",
+      "lat": 30.4667,
+      "lon": 91.0525,
+      "soil_type": "黑毡土(亚高山草甸土)"
+    },
+    "HBG_S01": {
+      "site_name": "海北灌丛",
+      "ecosystem": "Shrubland",
+      "veg_type": "alpine shrubland",
+      "lat": 37.67,
+      "lon": 101.33,
+      "soil_type": "草毡土(高山草甸土)"
+    },
+    "HBG_W01": {
+      "site_name": "海北站湿地",
+      "ecosystem": "Wetland",
+      "veg_type": "alpine wetland",
+      "lat": 37.6107,
+      "lon": 101.3146,
+      "soil_type": "草毡土(高山草甸土)"
+    },
+    "HN": {
+      "site_name": "海南儋州橡胶林",
+      "ecosystem": "Forest",
+      "veg_type": "tropical rubber plantation",
+      "lat": 19.5464,
+      "lon": 109.475,
+      "soil_type": "砖红壤"
+    },
+    "JUR": {
+      "site_name": "句容站稻麦轮作",
+      "ecosystem": "Cropland",
+      "veg_type": "rice-wheat cropland",
+      "lat": 31.8068,
+      "lon": 119.2173,
+      "soil_type": "鲜血水稻土"
+    },
+    "NMG": {
+      "site_name": "内蒙古站羊草草原和大针茅草原",
+      "ecosystem": "Grassland",
+      "veg_type": "temperate typical steppe",
+      "lat": 43.5518,
+      "lon": 116.6763,
+      "soil_type": "风沙土"
+    },
+    "QYF": {
+      "site_name": "千烟洲站亚热带人工林",
+      "ecosystem": "Forest",
+      "veg_type": "subtropical plantation forest",
+      "lat": 26.7467,
+      "lon": 115.0703,
+      "soil_type": "红壤"
+    },
+    "YCA": {
+      "site_name": "禹城站冬小麦-夏玉米复种农田",
+      "ecosystem": "Cropland",
+      "veg_type": "winter wheat-summer maize cropland",
+      "lat": 36.8294,
+      "lon": 116.5682,
+      "soil_type": "潮土"
+    }
+  },
+  "features": [
+    "rn", 
+    "ts1", 
+    "rh", 
+    "pa", 
+    "soil_moisture_0_to_7cm", 
+    "soil_moisture_7_to_28cm"
+  ],
+  "variables": [
+      "temperature_2m",
+      "relative_humidity_2m",
+      "surface_pressure_2m",
+      "soil_moisture_0_to_7cm",
+      "soil_moisture_7_to_28cm",
+      "shortwave_radiation" 
+  ]
+}

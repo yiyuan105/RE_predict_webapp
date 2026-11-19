@@ -222,6 +222,46 @@ h1 {
   letter-spacing: -0.01em;
 }
 
+.confidence {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 22px;
+}
+
+.confidence-label {
+  color: var(--muted);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+
+.badge {
+  padding: 1px 9px;
+  border: 1px solid currentColor;
+  border-radius: 2px;
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.badge.is-high {
+  color: #1a7f37;
+}
+
+.badge.is-medium {
+  color: #8a5a00;
+}
+
+.badge.is-low {
+  color: var(--muted);
+}
+
+.confidence-note {
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.7;
+}
+
 .meta {
   margin: 0;
   border-top: 1px solid var(--line-soft);
@@ -372,5 +412,327 @@ pre {
 
   .value-number {
     font-size: 38px;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   多页面框架：顶部导航（与 v1.1.0 的配色、字号、分隔线保持一致）
+   -------------------------------------------------------------------------- */
+
+.page--wide {
+  max-width: 1080px;
+}
+
+.site-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px 24px;
+  margin-bottom: 30px;
+}
+
+.site-brand {
+  color: var(--ink);
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+}
+
+.site-brand:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.site-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+}
+
+.site-nav-link {
+  padding-bottom: 2px;
+  border-bottom: 1px solid transparent;
+  color: var(--muted);
+  font-size: 13.5px;
+  text-decoration: none;
+}
+
+.site-nav-link:hover {
+  color: var(--ink);
+}
+
+.site-nav-link.is-active {
+  border-bottom-color: var(--ink);
+  color: var(--ink);
+}
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  overflow-wrap: anywhere;
+}
+
+/* --------------------------------------------------------------------------
+   站点模型查看页：筛选栏与站点卡片
+   -------------------------------------------------------------------------- */
+
+.toolbar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 14px 16px;
+  align-items: end;
+  margin-bottom: 10px;
+}
+
+.list-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px 16px;
+  margin-top: 14px;
+}
+
+.list-head .hint {
+  margin: 0;
+}
+
+.field select {
+  width: 100%;
+  height: 42px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  background: var(--bg);
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+}
+
+.field select:focus {
+  border-color: var(--ink);
+  outline: none;
+}
+
+.station-list {
+  display: grid;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.station {
+  padding: 18px 20px 16px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+}
+
+.station-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 16px;
+}
+
+.station-name {
+  margin: 0;
+  font-size: 15.5px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.station-code {
+  margin-right: 8px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  font-weight: 400;
+}
+
+.station-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 8px 20px;
+  margin: 14px 0 0;
+}
+
+.station-meta > div {
+  display: grid;
+  grid-template-columns: 68px 1fr;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.station-meta dt {
+  color: var(--muted);
+}
+
+.station-meta dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.station-details {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line-soft);
+}
+
+.detail-note {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+
+.feature-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 0 18px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.feature-list li {
+  display: grid;
+  gap: 2px 8px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--line-soft);
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+
+.feature-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
+}
+
+.feature-name {
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+}
+
+.feature-label {
+  color: var(--ink);
+}
+
+.feature-unit,
+.feature-source {
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+/* --------------------------------------------------------------------------
+   数据来源页：分组与卡片
+   -------------------------------------------------------------------------- */
+
+.source-groups {
+  margin-top: 20px;
+}
+
+.source-group {
+  margin-top: 28px;
+}
+
+.source-group:first-child {
+  margin-top: 0;
+}
+
+.section-title {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+}
+
+.section-title .count {
+  margin-left: 8px;
+  color: var(--muted-light);
+  font-weight: 400;
+}
+
+.source-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.source {
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+}
+
+.source-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 12px;
+}
+
+.source-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.source .meta > div {
+  grid-template-columns: 68px 1fr;
+}
+
+.panel {
+  margin-top: 32px;
+  padding: 18px 20px 20px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+}
+
+.footer-links {
+  margin-top: 6px;
+}
+
+.footer-links a {
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.footer-links a:hover {
+  color: var(--ink);
+}
+
+/* --------------------------------------------------------------------------
+   窄屏：筛选与卡片改为单列，不出现横向溢出
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 560px) {
+  .site-head {
+    margin-bottom: 24px;
+  }
+
+  .toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .station-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .feature-list {
+    grid-template-columns: 1fr;
+  }
+
+  .source-list {
+    grid-template-columns: 1fr;
   }
 }

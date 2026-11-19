@@ -1,24 +1,22 @@
-"""
-URL configuration for mysite project.
+"""URL 配置：前端页面、JSON 预测接口、只读站点/来源接口与后台。"""
 
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/6.1/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
+from django.conf import settings
 from django.contrib import admin
+from django.contrib.staticfiles.views import serve as staticfiles_serve
 from django.urls import path
+
 from RE_predict_webapp import views
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', views.home, name='home'),
+    path("admin/", admin.site.urls),
+    path("", views.home, name="home"),
+    path("stations/", views.stations_page, name="stations"),
+    path("sources/", views.sources_page, name="sources"),
+    path("api/predict/", views.predict_api, name="predict-api"),
+    path("api/stations/", views.stations_api, name="stations-api"),
+    path("api/sources/", views.sources_api, name="sources-api"),
 ]
+
+# 未安装 WhiteNoise 且关闭 DEBUG 时的兜底，保证部署后样式与脚本仍可访问
+if not settings.DEBUG and not getattr(settings, "WHITENOISE_AVAILABLE", False):
+    urlpatterns += [path("static/<path:path>", staticfiles_serve, {"insecure": True})]

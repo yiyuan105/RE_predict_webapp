@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+db.sqlite3
+
+# 部署与本地环境
+staticfiles/
+.venv/
+venv/
+.env
+*.log
+
+# 临时文件与打包备份（不入库）
+.tmp*
+*.tar
+*.tar.gz
