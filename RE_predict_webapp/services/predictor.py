@@ -11,7 +11,6 @@ from typing import Any
 
 from django.conf import settings
 
-from .catalog import StationCatalog
 from .config import Configuration
 from .errors import InvalidInputError, OutOfChinaError
 from .geo import ChinaBoundary, ClimateZones, Coordinate, SoilZones
@@ -63,14 +62,6 @@ class RePredictor:
         self._matcher = matcher
         self._models = models
         self._weather = weather
-        self._catalog: StationCatalog | None = None
-
-    @property
-    def station_catalog(self) -> StationCatalog:
-        """站点模型目录，与预测共用同一批站点/模型实例，保证两处口径与内存开销一致。"""
-        if self._catalog is None:
-            self._catalog = StationCatalog(self._stations.stations, self._models)
-        return self._catalog
 
     def predict(self, lat: Any, lon: Any) -> PredictionResult:
         coordinate = self._validate(lat, lon)

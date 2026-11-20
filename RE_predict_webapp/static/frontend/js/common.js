@@ -1,5 +1,5 @@
 /* ==========================================================================
-   公共脚本：接口请求、错误文案与文本转义，供三个页面共用。
+   公共脚本：接口请求、错误文案、文本转义与来源名称，供所有页面共用。
    ========================================================================== */
 
 window.RECommon = (() => {
@@ -9,7 +9,7 @@ window.RECommon = (() => {
     unknown: '请求失败，请稍后重试。',
     badResponse: '服务器返回的内容无法解析，请稍后重试。',
     codes: {
-      DATA_UNAVAILABLE: '服务端数据加载失败，请稍后再试。',
+      DATA_UNAVAILABLE: '服务端数据暂时无法加载，请稍后再试。',
       INTERNAL_ERROR: '服务器内部错误，请稍后再试。',
     },
   };
@@ -64,6 +64,16 @@ window.RECommon = (() => {
     return payload;
   }
 
+  /* 来源署名：key -> 来源名称，结果区标注与来源页取同一份文案 */
+  function sourceNames(payload) {
+    const names = {};
+    const sources = (payload && payload.sources) || [];
+    sources.forEach((source) => {
+      if (source && source.key) names[source.key] = formatText(source.name, '');
+    });
+    return names;
+  }
+
   let sourcesPromise = null;
 
   /* 结果区标注与数据来源页共用同一次请求，避免两处文案不一致 */
@@ -77,5 +87,5 @@ window.RECommon = (() => {
     return sourcesPromise;
   }
 
-  return { TEXT, escapeHtml, formatText, getJson, loadSources };
+  return { TEXT, escapeHtml, formatText, getJson, loadSources, sourceNames };
 })();

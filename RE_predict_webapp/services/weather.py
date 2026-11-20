@@ -13,6 +13,7 @@ import openmeteo_requests
 import pandas as pd
 
 from .errors import WeatherUnavailableError
+from .features import FEATURE_TRANSFORMS, FEATURE_VARIABLES
 from .geo import Coordinate
 
 logger = logging.getLogger(__name__)
@@ -21,19 +22,6 @@ DEFAULT_ENDPOINT = "https://api.open-meteo.com/v1/forecast"
 
 # config.json 里的变量名与 Open-Meteo 字段名不一致时的别名
 API_VARIABLE_ALIASES = {"surface_pressure_2m": "surface_pressure"}
-
-# 模型特征 -> 所需气象变量
-FEATURE_VARIABLES: Mapping[str, str] = {
-    "rn": "shortwave_radiation",
-    "ts1": "temperature_2m",
-    "rh": "relative_humidity_2m",
-    "pa": "surface_pressure",
-    "soil_moisture_0_to_7cm": "soil_moisture_0_to_7cm",
-    "soil_moisture_7_to_28cm": "soil_moisture_7_to_28cm",
-}
-
-# 净辐射由短波辐射按固定比例折算
-FEATURE_TRANSFORMS: Mapping[str, Callable[[float], float]] = {"rn": lambda value: value * 0.6}
 
 
 @dataclass(frozen=True)
@@ -106,7 +94,7 @@ class OpenMeteoWeatherProvider:
             try:
                 value = float(means[source_variable])
             except KeyError as exc:
-                raise WeatherUnavailableError(f"气象数据缺少变量 {source_variable}。", detail=str(exc)) from exc
+                raise WeatherUnavailableError("气象数据不完整，请稍后再试。", detail=str(exc)) from exc
             transform = FEATURE_TRANSFORMS.get(name)
             values[name] = float(transform(value)) if transform else value
 
@@ -139,7 +127,7 @@ class OpenMeteoWeatherProvider:
         variable_count = len(self._api_variables)
         total = hourly.VariablesLength()
         if total < variable_count or total % variable_count:
-            raise WeatherUnavailableError(f"气象接口返回的变量数量异常（{total}）。")
+            raise WeatherUnavailableError("气象数据格式异常，请稍后再试。", detail=f"变量数 {total}")
 
         members = total // variable_count
         frame = pd.DataFrame(

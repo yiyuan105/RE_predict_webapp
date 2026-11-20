@@ -110,19 +110,40 @@
     }
   },
   "features": [
-    "rn", 
-    "ts1", 
-    "rh", 
-    "pa", 
-    "soil_moisture_0_to_7cm", 
+    "rn",
+    "ts1",
+    "rh",
+    "pa",
+    "soil_moisture_0_to_7cm",
     "soil_moisture_7_to_28cm"
   ],
   "variables": [
-      "temperature_2m",
-      "relative_humidity_2m",
-      "surface_pressure_2m",
-      "soil_moisture_0_to_7cm",
-      "soil_moisture_7_to_28cm",
-      "shortwave_radiation" 
-  ]
+    "temperature_2m",
+    "relative_humidity_2m",
+    "surface_pressure_2m",
+    "soil_moisture_0_to_7cm",
+    "soil_moisture_7_to_28cm",
+    "shortwave_radiation"
+  ],
+  "training": {
+    "model_type": "随机森林 / RandomForestRegressor",
+    "display": {
+      "mse_digits": 4,
+      "r2_digits": 4
+    },
+    "records": {
+      "NMG": {"train_size": 2045, "test_size": 512, "train_mse": 1.1417, "train_r2": 0.9947, "test_mse": 17.8560, "test_r2": 0.9263},
+      "QYF": {"train_size": 2337, "test_size": 585, "train_mse": 0.1976, "train_r2": 0.9973, "test_mse": 2.4848, "test_r2": 0.9641},
+      "DXG": {"train_size": 2045, "test_size": 512, "train_mse": 0.2628, "train_r2": 0.9949, "test_mse": 2.5535, "test_r2": 0.9500},
+      "HBG_S01": {"train_size": 2337, "test_size": 585, "train_mse": 0.5409, "train_r2": 0.9926, "test_mse": 5.2283, "test_r2": 0.9318},
+      "HBG_W01": {"train_size": 1753, "test_size": 439, "train_mse": 0.8356, "train_r2": 0.9900, "test_mse": 6.7783, "test_r2": 0.9118},
+      "YCA": {"train_size": 2337, "test_size": 585, "train_mse": 0.2568, "train_r2": 0.9976, "test_mse": 3.2528, "test_r2": 0.9720},
+      "BNF": {"train_size": 2337, "test_size": 585, "train_mse": 0.0673, "train_r2": 0.9949, "test_mse": 3.7594, "test_r2": 0.7078},
+      "CBF": {"train_size": 2337, "test_size": 585, "train_mse": 1.2755, "train_r2": 0.9917, "test_mse": 16.7521, "test_r2": 0.8992},
+      "DHF": {"train_size": 2337, "test_size": 585, "train_mse": 0.4170, "train_r2": 0.9887, "test_mse": 3.7458, "test_r2": 0.9007},
+      "JUR": {"train_size": 1753, "test_size": 439, "train_mse": 0.4977, "train_r2": 0.9939, "test_mse": 9.7765, "test_r2": 0.8920},
+      "DM": {"train_size": 3681, "test_size": 921, "train_mse": 0.3984, "train_r2": 0.9971, "test_mse": 5.2686, "test_r2": 0.9616},
+      "HN": {"train_size": 2274, "test_size": 569, "train_mse": 0.2193, "train_r2": 0.9898, "test_mse": 8.2398, "test_r2": 0.7130}
+    }
+  }
 }

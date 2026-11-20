@@ -1,4 +1,8 @@
-"""业务异常：服务层抛出，视图层按 code 翻译成响应，不依赖 Django。"""
+"""业务异常：服务层抛出，视图层按 code 翻译成响应，不依赖 Django。
+
+message 会被前端直接展示，所以一律写成面向访客的话：不提文件、路径、变量或模块名；
+排查用的原始异常放在 detail 里，只进服务端日志。
+"""
 
 from __future__ import annotations
 
@@ -27,12 +31,12 @@ class OutOfChinaError(PredictionError):
 
 class DataUnavailableError(PredictionError):
     code = "DATA_UNAVAILABLE"
-    default_message = "地理或站点数据加载失败，请检查服务端日志。"
+    default_message = "地理或站点数据暂时无法加载，请稍后再试。"
 
 
 class ModelUnavailableError(PredictionError):
     code = "MODEL_UNAVAILABLE"
-    default_message = "该站点的随机森林模型不可用，请检查服务端日志。"
+    default_message = "该站点的模型暂不可用，请稍后再试。"
 
 
 class WeatherUnavailableError(PredictionError):

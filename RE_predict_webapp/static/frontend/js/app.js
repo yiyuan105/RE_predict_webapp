@@ -1,6 +1,6 @@
 /* ==========================================================================
    生态系统呼吸预测 — 页面逻辑
-   对接后端 JSON 接口 GET /api/predict/?lat=…&lon=…，展示预测值与置信度。
+   调用本站预测接口，展示预测值、置信度与匹配信息。
    ========================================================================== */
 
 (() => {
@@ -30,6 +30,7 @@
     coords: '坐标',
     weatherSource: '气象来源',
     zoneSource: '分区依据',
+    attribution: '来源',
     copy: '复制结果',
     copied: '已复制',
     copyFailed: '复制失败',
@@ -48,8 +49,8 @@
         INVALID_INPUT: '经纬度格式不正确。',
         OUT_OF_CHINA: '输入的经纬度不在中国陆地范围内，无法预测。',
         WEATHER_UNAVAILABLE: '未能获取气象数据，请稍后再试。',
-        MODEL_UNAVAILABLE: '该站点的模型不可用，请稍后再试。',
-        DATA_UNAVAILABLE: '服务端数据加载失败，请稍后再试。',
+        MODEL_UNAVAILABLE: '该站点的模型暂不可用，请稍后再试。',
+        DATA_UNAVAILABLE: '服务端数据暂时无法加载，请稍后再试。',
         INTERNAL_ERROR: '服务器内部错误，请稍后再试。',
       },
     },
@@ -195,7 +196,6 @@
     const station = result.station || {};
     const matching = result.matching || {};
     const confidence = result.confidence || {};
-    const weather = result.weather || {};
 
     dom.body.innerHTML = `
       <p class="value">
@@ -212,7 +212,7 @@
         <div><dt>${escapeHtml(TEXT.station)}</dt><dd>${escapeHtml(stationLabel(station))}</dd></div>
         <div><dt>${escapeHtml(TEXT.distance)}</dt><dd>${escapeHtml(formatDistance(matching.distance_km))}</dd></div>
         <div><dt>${escapeHtml(TEXT.coords)}</dt><dd>${escapeHtml(`${formatCoord(data.request && data.request.lat)}, ${formatCoord(data.request && data.request.lon)}`)}</dd></div>
-        <div><dt>${escapeHtml(TEXT.weatherSource)}</dt><dd data-source-weather>${escapeHtml(formatText(weather.source))}</dd></div>
+        <div><dt>${escapeHtml(TEXT.weatherSource)}</dt><dd data-source-weather>—</dd></div>
         <div><dt>${escapeHtml(TEXT.zoneSource)}</dt><dd data-source-zones>${escapeHtml(describeZones(matching, null))}</dd></div>
       </dl>
       <div class="actions">
@@ -224,8 +224,8 @@
   }
 
   /* ------------------------------------------------------------------------
-     结果区的数据来源标注
-     与数据来源页共用 GET /api/sources/ 的同一份文案，避免两处不一致。
+     结果区的数据来源署名
+     与数据来源页共用同一份文案，避免两处不一致。
      --------------------------------------------------------------------- */
 
   function nextRenderToken() {
@@ -247,17 +247,16 @@
 
     const result = state.payload.result || {};
     const matching = result.matching || {};
+    const names = common.sourceNames(sources);
 
     const weatherNode = dom.body.querySelector('[data-source-weather]');
-    if (weatherNode && sources && sources.weather) {
-      weatherNode.textContent = formatText(sources.weather.label, weatherNode.textContent);
-    }
+    if (weatherNode && names.weather) weatherNode.textContent = names.weather;
 
     const zonesNode = dom.body.querySelector('[data-source-zones]');
-    if (zonesNode) zonesNode.textContent = describeZones(matching, sources);
+    if (zonesNode) zonesNode.textContent = describeZones(matching, names);
   }
 
-  function describeZones(matching, sources) {
+  function describeZones(matching, names) {
     const parts = [];
     if (matching.same_soil) {
       parts.push(`同类土壤（土壤分区：${formatText(matching.input_soil_type, '未知')}）`);
@@ -267,13 +266,12 @@
     }
     if (!parts.length) return '未命中分区，按空间最近站点匹配';
 
-    const shorts = (sources && sources.shorts) || {};
-    const layers = [];
-    if (matching.same_soil && shorts.soil) layers.push(shorts.soil);
-    if (matching.same_climate && shorts.climate) layers.push(shorts.climate);
+    const labels = [];
+    if (matching.same_soil && names && names.soil) labels.push(names.soil);
+    if (matching.same_climate && names && names.climate) labels.push(names.climate);
 
     const text = parts.join('、');
-    return layers.length ? `${text}；图层：${layers.join('、')}` : text;
+    return labels.length ? `${text}；${TEXT.attribution}：${labels.join('、')}` : text;
   }
 
   function renderError(message, raw) {

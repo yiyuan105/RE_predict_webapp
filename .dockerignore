@@ -11,3 +11,11 @@ staticfiles/
 .idea/
 .vscode/
 .DS_Store
+github版本控制.md
+方案存放/
+云端部署/
+
+# 环境变量与编排文件不进镜像：.env 里有真实密钥，镜像一旦构建就会随镜像分发
+.env
+.env.*
+docker-compose.yml

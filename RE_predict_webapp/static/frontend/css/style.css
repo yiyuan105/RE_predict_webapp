@@ -56,9 +56,9 @@ body {
 }
 
 .page {
-  max-width: 620px;
+  max-width: 1080px;
   margin: 0 auto;
-  padding: 72px 24px 56px;
+  padding: 64px 24px 56px;
 }
 
 /* --------------------------------------------------------------------------
@@ -81,6 +81,7 @@ h1 {
 
 .intro {
   margin: 12px 0 0;
+  max-width: 74ch;
   color: var(--muted);
   font-size: 14px;
   line-height: 1.8;
@@ -181,7 +182,7 @@ h1 {
 
 .result {
   min-height: 152px;
-  margin-top: 36px;
+  margin-top: 32px;
   padding: 20px 22px 22px;
   border: 1px solid var(--line);
   border-radius: 2px;
@@ -383,45 +384,23 @@ pre {
   margin: 0;
 }
 
-/* --------------------------------------------------------------------------
-   移动端
-   -------------------------------------------------------------------------- */
+.footer-links {
+  margin-top: 6px;
+}
 
-@media (max-width: 560px) {
-  .page {
-    padding: 40px 20px 40px;
-  }
+.footer-links a {
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
 
-  h1 {
-    font-size: 24px;
-  }
-
-  .header {
-    margin-bottom: 28px;
-    padding-bottom: 22px;
-  }
-
-  .fields {
-    grid-template-columns: 1fr;
-    gap: 14px;
-  }
-
-  .result {
-    padding: 18px;
-  }
-
-  .value-number {
-    font-size: 38px;
-  }
+.footer-links a:hover {
+  color: var(--ink);
 }
 
 /* --------------------------------------------------------------------------
-   多页面框架：顶部导航（与 v1.1.0 的配色、字号、分隔线保持一致）
+   多页面框架：顶部导航（沿用 v1.1.0 的配色、字号与分隔线）
    -------------------------------------------------------------------------- */
-
-.page--wide {
-  max-width: 1080px;
-}
 
 .site-head {
   display: flex;
@@ -468,35 +447,133 @@ pre {
   color: var(--ink);
 }
 
-code {
-  font-family: var(--font-mono);
-  font-size: 0.92em;
-  overflow-wrap: anywhere;
-}
-
 /* --------------------------------------------------------------------------
-   站点模型查看页：筛选栏与站点卡片
+   首页布局：左侧三个导航框 + 主内容 + 右侧公告边栏
    -------------------------------------------------------------------------- */
 
-.toolbar {
+.layout {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-  gap: 14px 16px;
-  align-items: end;
-  margin-bottom: 10px;
+  grid-template-columns: 176px minmax(0, 1fr) 272px;
+  gap: 30px;
+  align-items: start;
 }
 
-.list-head {
+.main {
+  min-width: 0;
+}
+
+.rail {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  min-width: 0;
+}
+
+.rail .section-title {
+  margin: 0 0 2px;
+}
+
+.rail-box {
+  display: grid;
+  gap: 2px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  color: var(--ink-soft);
+  text-decoration: none;
+}
+
+.rail-box:hover {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.rail-box.is-active {
+  border-color: var(--ink);
+  color: var(--ink);
+}
+
+.rail-box-label {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.rail-box-hint {
+  color: var(--muted-light);
+  font-size: 11.5px;
+  line-height: 1.6;
+}
+
+.sidebar {
+  position: sticky;
+  top: 24px;
+  min-width: 0;
+  padding-top: 1px;
+}
+
+.notice-list {
+  display: grid;
+  gap: 10px;
+  max-height: 62vh;
+  margin-top: 12px;
+  padding-right: 2px;
+  overflow-y: auto;
+}
+
+.notice {
+  padding: 12px 14px;
+  border: 1px solid var(--line-soft);
+  border-radius: 2px;
+}
+
+.notice-head {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
-  gap: 6px 16px;
-  margin-top: 14px;
+  gap: 4px 10px;
 }
 
-.list-head .hint {
+.notice-title {
   margin: 0;
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.notice-time {
+  color: var(--muted-light);
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.notice-body {
+  margin-top: 8px;
+  color: var(--ink-soft);
+  font-size: 12.5px;
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+}
+
+.notice-body p {
+  margin: 0;
+}
+
+.notice-body p + p {
+  margin-top: 6px;
+}
+
+/* --------------------------------------------------------------------------
+   模型训练情况页：筛选栏与指标表
+   -------------------------------------------------------------------------- */
+
+.toolbar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: 14px 16px;
+  align-items: end;
+  margin-bottom: 10px;
 }
 
 .field select {
@@ -516,134 +593,79 @@ code {
   outline: none;
 }
 
-.station-list {
-  display: grid;
-  gap: 16px;
-  margin-top: 20px;
-}
-
-.station {
-  padding: 18px 20px 16px;
-  border: 1px solid var(--line);
-  border-radius: 2px;
-}
-
-.station-head {
+.list-head {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
-  gap: 8px 16px;
+  gap: 6px 16px;
+  margin-top: 14px;
 }
 
-.station-name {
+.list-head .hint {
   margin: 0;
-  font-size: 15.5px;
-  font-weight: 600;
-  line-height: 1.5;
 }
 
-.station-code {
-  margin-right: 8px;
+.table-wrap {
+  max-width: 100%;
+  margin-top: 18px;
+  overflow-x: auto;
+}
+
+.metrics {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.metrics th,
+.metrics td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line-soft);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.metrics thead th {
+  border-bottom-color: var(--line);
   color: var(--muted);
-  font-family: var(--font-mono);
-  font-size: 12.5px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.metrics tbody tr:hover {
+  background: #fafafa;
+}
+
+.metrics tbody th,
+.metrics td.cell-model {
+  text-align: left;
   font-weight: 400;
 }
 
-.station-meta {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
-  gap: 8px 20px;
-  margin: 14px 0 0;
-}
-
-.station-meta > div {
-  display: grid;
-  grid-template-columns: 68px 1fr;
-  gap: 8px;
-  font-size: 13px;
-}
-
-.station-meta dt {
-  color: var(--muted);
-}
-
-.station-meta dd {
-  margin: 0;
-  overflow-wrap: anywhere;
-}
-
-.station-details {
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid var(--line-soft);
-}
-
-.detail-note {
-  margin: 10px 0 0;
-  color: var(--muted);
-  font-size: 12.5px;
-  line-height: 1.8;
-  overflow-wrap: anywhere;
-}
-
-.feature-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 0 18px;
-  margin: 10px 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.feature-list li {
-  display: grid;
-  gap: 2px 8px;
-  padding: 7px 0;
-  border-bottom: 1px solid var(--line-soft);
-  font-size: 12.5px;
-  line-height: 1.6;
-}
-
-.feature-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 4px 8px;
-}
-
-.feature-name {
-  color: var(--muted);
-  font-family: var(--font-mono);
-  font-size: 11.5px;
-}
-
-.feature-label {
+.metrics .cell-code {
   color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 12.5px;
 }
 
-.feature-unit,
-.feature-source {
+.metrics .cell-model {
   color: var(--muted);
-  overflow-wrap: anywhere;
+  font-size: 12px;
+}
+
+.metrics .empty-cell {
+  padding: 18px 12px;
+  color: var(--muted-light);
+  text-align: left;
 }
 
 /* --------------------------------------------------------------------------
-   数据来源页：分组与卡片
+   数据来源注明页：署名卡片
    -------------------------------------------------------------------------- */
-
-.source-groups {
-  margin-top: 20px;
-}
-
-.source-group {
-  margin-top: 28px;
-}
-
-.source-group:first-child {
-  margin-top: 0;
-}
 
 .section-title {
   margin: 0 0 12px;
@@ -653,10 +675,8 @@ code {
   letter-spacing: 0.06em;
 }
 
-.section-title .count {
-  margin-left: 8px;
-  color: var(--muted-light);
-  font-weight: 400;
+.source-groups {
+  margin-top: 20px;
 }
 
 .source-list {
@@ -687,35 +707,64 @@ code {
 }
 
 .source .meta > div {
-  grid-template-columns: 68px 1fr;
-}
-
-.panel {
-  margin-top: 32px;
-  padding: 18px 20px 20px;
-  border: 1px solid var(--line);
-  border-radius: 2px;
-}
-
-.footer-links {
-  margin-top: 6px;
-}
-
-.footer-links a {
-  color: var(--muted);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.footer-links a:hover {
-  color: var(--ink);
+  grid-template-columns: 72px 1fr;
 }
 
 /* --------------------------------------------------------------------------
-   窄屏：筛选与卡片改为单列，不出现横向溢出
+   窄屏：左三框与公告边栏堆叠到主内容上下，表格与卡片不出现横向溢出
    -------------------------------------------------------------------------- */
 
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+
+  .rail-box {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 4px 10px;
+    padding: 10px 14px;
+  }
+
+  .sidebar {
+    position: static;
+  }
+
+  .notice-list {
+    max-height: none;
+    overflow-y: visible;
+  }
+}
+
 @media (max-width: 560px) {
+  .page {
+    padding: 40px 20px 40px;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  .header {
+    margin-bottom: 28px;
+    padding-bottom: 22px;
+  }
+
+  .fields {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .result {
+    padding: 18px;
+  }
+
+  .value-number {
+    font-size: 38px;
+  }
+
   .site-head {
     margin-bottom: 24px;
   }
@@ -724,12 +773,9 @@ code {
     grid-template-columns: 1fr;
   }
 
-  .station-meta {
-    grid-template-columns: 1fr;
-  }
-
-  .feature-list {
-    grid-template-columns: 1fr;
+  .metrics {
+    min-width: 640px;
+    font-size: 12.5px;
   }
 
   .source-list {

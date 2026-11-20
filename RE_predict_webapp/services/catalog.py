@@ -1,70 +1,44 @@
-"""站点模型目录：把站点、分区标注、模型文件状态与特征说明汇总成只读结构。
+"""对外只读目录的装配入口。
 
-站点模型页与 GET /api/stations/ 都从这里取数，站点或模型文件变化后无需改视图。
+训练情况、来源注明与公告各自在 training.py / sources.py / announcements.py 里定义
+（三者都是一处数据源），这里只负责装配：视图、测试都从 SiteCatalog 取数，
+将来新增对外栏目时也只加一个属性，不必改视图里的取数方式。
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Any, Sequence
+from functools import cached_property
 
-from .features import FeatureInfo, describe_features
-from .rf import ModelStatus, RandomForestRepository
-from .stations import Station
-
-
-@dataclass(frozen=True)
-class StationProfile:
-    """一个站点的模型信息：站点自身 + 模型文件状态 + 该站模型的输入特征。"""
-
-    station: Station
-    model: ModelStatus
-    features: tuple[FeatureInfo, ...]
-
-    def to_dict(self) -> dict[str, Any]:
-        return {
-            **self.station.to_dict(),
-            "model": self.model.to_dict(),
-            "features": [feature.name for feature in self.features],
-        }
+from .announcements import AnnouncementCatalog, build_announcement_catalog
+from .config import Configuration, DataPaths
+from .sources import SourceCatalog, build_source_catalog
+from .training import TrainingCatalog, build_training_catalog
 
 
-class StationCatalog:
-    """只读的站点模型目录。数据来自站点集合（shp 分区标注）与模型仓库，本身不做 I/O 之外的推导。"""
+class SiteCatalog:
+    """按需构建三个对外目录；没被访问的目录不会读盘。"""
 
-    def __init__(self, stations: Sequence[Station], models: RandomForestRepository) -> None:
-        self._stations = tuple(stations)
-        self._models = models
+    def __init__(self, configuration: Configuration | None = None) -> None:
+        self._configuration = configuration
 
-    @property
-    def feature_names(self) -> tuple[str, ...]:
-        return tuple(self._models.feature_names)
+    @cached_property
+    def configuration(self) -> Configuration:
+        return self._configuration or Configuration.load()
 
-    @property
-    def features(self) -> tuple[FeatureInfo, ...]:
-        return describe_features(self.feature_names)
+    @cached_property
+    def training(self) -> TrainingCatalog:
+        return build_training_catalog(self.configuration)
 
-    def profiles(self) -> tuple[StationProfile, ...]:
-        features = self.features
-        return tuple(
-            StationProfile(
-                station=station,
-                model=self._models.status(station.code),
-                features=features,
-            )
-            for station in self._stations
-        )
+    @cached_property
+    def sources(self) -> SourceCatalog:
+        return build_source_catalog()
 
-    def to_dict(self) -> dict[str, Any]:
-        profiles = self.profiles()
-        available = sum(1 for profile in profiles if profile.model.available)
-        return {
-            "count": len(profiles),
-            "features": [feature.to_dict() for feature in self.features],
-            "stations": [profile.to_dict() for profile in profiles],
-            "summary": {
-                "total": len(profiles),
-                "available": available,
-                "unavailable": len(profiles) - available,
-            },
-        }
+    @cached_property
+    def announcements(self) -> AnnouncementCatalog:
+        # 公告只依赖路径，不必为了它把站点配置也读一遍
+        paths = self._configuration.paths if self._configuration else DataPaths.from_settings()
+        return build_announcement_catalog(paths)
+
+
+def build_site_catalog(configuration: Configuration | None = None) -> SiteCatalog:
+    return SiteCatalog(configuration)

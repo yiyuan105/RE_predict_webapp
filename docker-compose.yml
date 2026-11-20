@@ -1,0 +1,45 @@
+# 生态系统呼吸预测 — 容器编排（Docker Compose v2）
+# 用法见《云端部署与更新》（方案存放/开发文档/云端部署与更新.md）：
+#   1) cp .env.example .env 并填好真实值
+#   2) docker compose build
+#   3) docker compose up -d
+services:
+  re-predict:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: re-predict-webapp:1.1.2
+    container_name: re-predict
+    restart: unless-stopped
+
+    # 只绑本机回环，公网入口交给反向代理（Nginx / 宝塔），避免 8000 端口直接暴露
+    ports:
+      - "127.0.0.1:8000:8000"
+
+    env_file:
+      - .env
+    environment:
+      # 下面两项是容器内路径，与卷挂载保持一致即可，通常无需改动
+      DJANGO_DEBUG: "false"
+      MODEL_DATA_DIR: /app/models
+
+    volumes:
+      # 模型与地理数据：宿主机 models/ 覆盖镜像内同名目录，更新数据无需重建镜像。
+      # 注意：宿主机目录为空会遮挡镜像自带的数据，全新环境请先确认 models/ 已完整。
+      - ./models:/app/models:ro
+      # 公告：宿主机文件直接挂进容器，改完立即生效，无需重启或重建镜像
+      - ./RE_predict_webapp/announcements.json:/app/RE_predict_webapp/announcements.json:ro
+
+    # 健康检查只打本地只读接口：不触发 Open-Meteo 请求，也不加载随机森林模型
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - |
+          import urllib.request
+          urllib.request.urlopen("http://127.0.0.1:8000/api/announcements/", timeout=5)
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

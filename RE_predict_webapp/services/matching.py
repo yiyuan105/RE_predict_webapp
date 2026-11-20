@@ -158,4 +158,4 @@ class StationMatcher:
                 input_climate_type=climate_type,
             )
 
-        raise PredictionError("没有可用的匹配策略，请检查 MATCH_TIERS 配置。")
+        raise PredictionError("暂时无法为输入位置匹配站点，请稍后再试。")

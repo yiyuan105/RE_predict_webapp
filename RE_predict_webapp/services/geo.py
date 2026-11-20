@@ -47,7 +47,8 @@ class ChinaBoundary:
             payload = json.loads(Path(source).read_text(encoding="utf-8"))
             geometries = [shape(feature["geometry"]) for feature in payload["features"]]
         except (OSError, ValueError, KeyError) as exc:
-            raise DataUnavailableError("中国边界 geojson 读取失败。", detail=str(exc)) from exc
+            # 对外只说"边界数据读不到"，具体异常进 detail 供日志排查
+            raise DataUnavailableError("中国陆地边界数据暂时无法加载，请稍后再试。", detail=str(exc)) from exc
 
         geometry = union_all(geometries) if len(geometries) > 1 else geometries[0]
         if not geometry.is_valid:
@@ -68,9 +69,12 @@ class ZonalLayer:
         self._value_field = value_field or self.value_field
         frame = self._read(Path(source))
         if frame.crs is None:
-            raise DataUnavailableError(f"{Path(source).name} 缺少坐标系信息（.prj 缺失？）。")
+            raise DataUnavailableError("分区数据缺少坐标系信息，暂时无法使用。", detail=Path(source).name)
         if self._value_field not in frame.columns:
-            raise DataUnavailableError(f"{Path(source).name} 缺少字段 {self._value_field}。")
+            raise DataUnavailableError(
+                "分区数据缺少必要的属性字段，暂时无法使用。",
+                detail=f"{Path(source).name}: {self._value_field}",
+            )
 
         self._geometries = list(frame.geometry)
         self._values = frame[self._value_field].tolist()
@@ -85,7 +89,10 @@ class ZonalLayer:
             try:
                 return gpd.read_file(source, encoding="gbk")
             except Exception as exc:
-                raise DataUnavailableError(f"分区数据 {source.name} 读取失败。", detail=str(exc)) from exc
+                raise DataUnavailableError(
+                    "分区数据读取失败，暂时无法使用。",
+                    detail=f"{source.name}: {exc}",
+                ) from exc
 
     def lookup(self, coordinate: Coordinate) -> str | None:
         x, y = self._transformer.transform(coordinate.lon, coordinate.lat)

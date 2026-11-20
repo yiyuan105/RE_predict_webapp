@@ -1,44 +1,71 @@
 {% extends "RE_predict_webapp/base.html" %}
 {% load static %}
 
-{% block content %}
-    <form class="form" id="predict-form" novalidate>
-      <div class="fields">
-        <div class="field">
-          <!-- 文案：纬度字段名 -->
-          <label for="lat">纬度</label>
-          <input id="lat" name="lat" type="text" inputmode="decimal" autocomplete="off"
-                 spellcheck="false" maxlength="16" placeholder="39.90"
-                 aria-describedby="form-message">
+{% block body %}
+  <div class="layout">
+    <aside class="rail" aria-label="站点导航">
+      {# 文案：左侧导航框的小标题 #}
+      <h2 class="section-title">导航</h2>
+      {% for item in rail_items %}
+      <a class="rail-box{% if item.key == page.key %} is-active{% endif %}"
+         href="{% url item.url_name %}"{% if item.key == page.key %} aria-current="page"{% endif %}>
+        <span class="rail-box-label">{{ item.box_label }}</span>
+        <span class="rail-box-hint">{{ item.box_hint }}</span>
+      </a>
+      {% endfor %}
+    </aside>
+
+    <main id="main" class="main">
+      <form class="form" id="predict-form" novalidate>
+        <div class="fields">
+          <div class="field">
+            {# 文案：纬度字段名 #}
+            <label for="lat">纬度</label>
+            <input id="lat" name="lat" type="text" inputmode="decimal" autocomplete="off"
+                   spellcheck="false" maxlength="16" placeholder="39.90"
+                   aria-describedby="form-message">
+          </div>
+          <div class="field">
+            {# 文案：经度字段名 #}
+            <label for="lon">经度</label>
+            <input id="lon" name="lon" type="text" inputmode="decimal" autocomplete="off"
+                   spellcheck="false" maxlength="17" placeholder="116.40"
+                   aria-describedby="form-message">
+          </div>
         </div>
-        <div class="field">
-          <!-- 文案：经度字段名 -->
-          <label for="lon">经度</label>
-          <input id="lon" name="lon" type="text" inputmode="decimal" autocomplete="off"
-                 spellcheck="false" maxlength="17" placeholder="116.40"
-                 aria-describedby="form-message">
+
+        {# 文案：默认提示（校验失败时会被替换） #}
+        <p class="hint" id="form-message">北纬、东经为正；纬度 −90 ~ 90，经度 −180 ~ 180。</p>
+
+        {# 文案：提交按钮 #}
+        <button class="button" id="submit-btn" type="submit">
+          <span id="submit-label">开始预测</span>
+        </button>
+      </form>
+
+      <section class="result" aria-live="polite">
+        {# 文案：结果区标题 #}
+        <h2 class="result-title">预测结果</h2>
+        <div id="result-body">
+          <p class="placeholder">尚未预测</p>
         </div>
-      </div>
+      </section>
+    </main>
 
-      <!-- 文案：默认提示（校验失败时会被替换） -->
-      <p class="hint" id="form-message">北纬、东经为正；纬度 −90 ~ 90，经度 −180 ~ 180。</p>
-
-      <!-- 文案：提交按钮 -->
-      <button class="button" id="submit-btn" type="submit">
-        <span id="submit-label">开始预测</span>
-      </button>
-    </form>
-
-    <section class="result" aria-live="polite">
-      <!-- 文案：结果区标题 -->
-      <h2 class="result-title">预测结果</h2>
-      <div id="result-body">
-        <p class="placeholder">尚未预测</p>
-      </div>
-    </section>
+    <aside class="sidebar" aria-labelledby="notice-title">
+      {# 文案：公告边栏标题 #}
+      <h2 class="section-title" id="notice-title">公告</h2>
+      <p class="hint" id="notice-status" role="status">正在加载公告…</p>
+      <div class="notice-list" id="notice-list"></div>
+      <noscript>
+        <p class="hint">查看公告需要启用 JavaScript。</p>
+      </noscript>
+    </aside>
+  </div>
 {% endblock %}
 
 {% block scripts %}
   <script src="{% static 'frontend/js/common.js' %}" defer></script>
   <script src="{% static 'frontend/js/app.js' %}" defer></script>
+  <script src="{% static 'frontend/js/notices.js' %}" defer></script>
 {% endblock %}

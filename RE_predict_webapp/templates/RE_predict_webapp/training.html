@@ -1,0 +1,56 @@
+{% extends "RE_predict_webapp/base.html" %}
+{% load static %}
+
+{% block content %}
+    <section class="toolbar" aria-label="训练情况筛选">
+      <div class="field">
+        {# 文案：检索框 #}
+        <label for="code-search">检索站点</label>
+        <input id="code-search" type="search" autocomplete="off" spellcheck="false"
+               placeholder="站点编码，如 YCA">
+      </div>
+      <div class="field">
+        {# 文案：测试集 R² 区间筛选 #}
+        <label for="filter-r2">测试集 R²</label>
+        <select id="filter-r2">
+          <option value="">全部</option>
+          <option value="high">0.95 以上</option>
+          <option value="mid">0.90 ~ 0.95</option>
+          <option value="low">0.90 以下</option>
+        </select>
+      </div>
+    </section>
+
+    <div class="list-head">
+      <p class="hint" id="training-status" role="status">正在加载模型训练情况…</p>
+      <button type="button" class="text-button" id="filter-reset">重置筛选</button>
+    </div>
+
+    <div class="table-wrap">
+      <table class="metrics" id="training-table" hidden>
+        <thead>
+          <tr>
+            {# 文案：指标表表头 #}
+            <th scope="col">站点</th>
+            <th scope="col">训练样本数</th>
+            <th scope="col">测试样本数</th>
+            <th scope="col">训练集 MSE</th>
+            <th scope="col">训练集 R²</th>
+            <th scope="col">测试集 MSE</th>
+            <th scope="col">测试集 R²</th>
+            <th scope="col">模型类别</th>
+          </tr>
+        </thead>
+        <tbody id="training-body"></tbody>
+      </table>
+    </div>
+
+    <noscript>
+      <p class="hint">模型训练情况需要启用 JavaScript 才能查看。</p>
+    </noscript>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{% static 'frontend/js/common.js' %}" defer></script>
+  <script src="{% static 'frontend/js/training.js' %}" defer></script>
+{% endblock %}
